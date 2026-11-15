@@ -1,0 +1,7 @@
+# Pinned to the versions used in Colab when the model was trained.
+# A saved scikit-learn model can fail to load if these change.
+scikit-learn==1.6.1
+pandas==2.2.3
+numpy==2.4.6
+gradio==6.31.0
+joblib

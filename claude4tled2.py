@@ -542,3 +542,44 @@ if not NO_LAUNCH:
     build_app().launch(share=True)
 
 import sklearn, pandas, numpy, gradio; print(sklearn.__version__, pandas.__version__, numpy.__version__, gradio.__version__)
+
+# ---------- CALIBRATION (run after readmission_diabetes.py has loaded or trained the model) ----------
+import json
+import joblib
+import numpy as np
+from sklearn.calibration import calibration_curve
+from sklearn.isotonic import IsotonicRegression
+from sklearn.metrics import brier_score_loss, roc_auc_score, roc_curve
+
+# 1. Fit the calibrator on VALIDATION data only (the model never trained on it)
+p_val_raw = model.predict_proba(X_val)[:, 1]
+iso = IsotonicRegression(out_of_bounds="clip", y_min=0, y_max=1).fit(p_val_raw, y_val)
+p_val_cal = iso.predict(p_val_raw)
+p_test_cal = iso.predict(p_test_prob)
+
+# 2. Check on the test set
+print("Brier  raw:", round(brier_score_loss(y_test, p_test_prob), 4),
+      "| calibrated:", round(brier_score_loss(y_test, p_test_cal), 4))
+print("ROC-AUC raw:", round(roc_auc_score(y_test, p_test_prob), 4),
+      "| calibrated:", round(roc_auc_score(y_test, p_test_cal), 4))
+print(f"Mean predicted: raw {p_test_prob.mean():.3f} | calibrated {p_test_cal.mean():.3f} | "
+      f"observed {y_test.mean():.3f}")
+frac_pos, mean_pred = calibration_curve(y_test, p_test_cal, n_bins=10, strategy="quantile")
+print("Calibrated test table (mean_predicted, observed_rate):")
+for m, o in zip(mean_pred, frac_pos):
+    print(f"  {m:.3f}  {o:.3f}")
+
+# 3. Re-choose the threshold on calibrated VALIDATION probabilities (Youden's J)
+fpr, tpr, thr = roc_curve(y_val, p_val_cal)
+THRESH_CAL = round(float(np.clip(thr[np.argmax(tpr - fpr)], THRESH_MIN, THRESH_MAX)), 2)
+print("Calibrated threshold (validation):", THRESH_CAL)
+
+# 4. Save the calibrator and update the app's assets
+joblib.dump(iso, "calibrator.joblib")
+with open("app_assets.json") as f:
+    assets = json.load(f)
+assets["test_probs"] = [float(v) for v in p_test_cal]
+assets["threshold"] = THRESH_CAL
+with open("app_assets.json", "w") as f:
+    json.dump(assets, f)
+print("Saved calibrator.joblib and updated app_assets.json")
