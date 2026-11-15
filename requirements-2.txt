@@ -1,0 +1,8 @@
+# Versions MUST match the versions used in Colab when the model was trained.
+# Check in Colab with:  import sklearn, pandas, numpy, gradio; print(sklearn.__version__, pandas.__version__, numpy.__version__, gradio.__version__)
+# Then replace the lines below with those exact versions (e.g. scikit-learn==1.5.2).
+gradio
+scikit-learn
+pandas
+numpy
+joblib
