@@ -93,4 +93,4 @@ See `Credits.docx` for libraries and AI tools.
 
 ## Team
 
-[Team member names, emails and schools]
+Solo entry, one student: [your name], [email], [school].
