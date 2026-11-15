@@ -93,4 +93,4 @@ See `Credits.docx` for libraries and AI tools.
 
 ## Team
 
-Solo entry, one student: [your name], [email], [school].
+Solo entry, one student: Erdem Uzun, Ankara Atatürk Anadolu Lisesi, hesapolsun150@gmail.com
