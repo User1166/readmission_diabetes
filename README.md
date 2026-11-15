@@ -7,7 +7,7 @@ A prototype that estimates how likely a diabetic patient is to be readmitted to 
 **This project is a prototype and is not medical advice.**
 
 ## Live app
-
+Video Link https://youtu.be/fEiFKPnf1z0?si=pZNtmcsWGZ5akYTc
 Temporary Gradio link (active for up to one week after it was created):
 https://9bc43999a4dda89d02.gradio.live
 
